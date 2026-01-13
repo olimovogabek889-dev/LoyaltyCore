@@ -22,11 +22,13 @@ SECRET_KEY = os.environ.get(
     "django-insecure-unsafe-local-secret-key"
 )
 
+# Render’da DEBUG=False bo‘ladi
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
+# MUHIM: Render domeni shu yerda bo‘lishi shart
 ALLOWED_HOSTS = os.environ.get(
     "ALLOWED_HOSTS",
-    "127.0.0.1,localhost"
+    "127.0.0.1,localhost,loyaltycore.onrender.com"
 ).split(",")
 
 
@@ -35,7 +37,7 @@ ALLOWED_HOSTS = os.environ.get(
 # =====================
 
 INSTALLED_APPS = [
-    # Django
+    # Django core
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
