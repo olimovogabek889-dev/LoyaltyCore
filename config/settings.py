@@ -22,14 +22,16 @@ SECRET_KEY = os.environ.get(
     "django-insecure-unsafe-local-secret-key"
 )
 
-# Render’da DEBUG=False bo‘ladi
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-# MUHIM: Render domeni shu yerda bo‘lishi shart
-ALLOWED_HOSTS = os.environ.get(
-    "ALLOWED_HOSTS",
-    "127.0.0.1,localhost,loyaltycore.onrender.com"
-).split(",")
+
+# ⚠️ ENG MUHIM JOY
+# Render + local + swagger ishlashi uchun
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    "loyaltycore.onrender.com",
+]
 
 
 # =====================
@@ -37,7 +39,7 @@ ALLOWED_HOSTS = os.environ.get(
 # =====================
 
 INSTALLED_APPS = [
-    # Django core
+    # Django
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -155,13 +157,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # =====================
 # DJANGO REST FRAMEWORK
 # =====================
+# ⚠️ 403 bo‘lmasligi uchun AllowAny
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
     ],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
