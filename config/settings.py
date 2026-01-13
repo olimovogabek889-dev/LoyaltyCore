@@ -186,3 +186,4 @@ SPECTACULAR_SETTINGS = {
 
 LOGIN_REDIRECT_URL = '/api/loyalty/card/'
 LOGOUT_REDIRECT_URL = '/api-auth/login/'
+STATIC_ROOT = BASE_DIR / "staticfiles"
