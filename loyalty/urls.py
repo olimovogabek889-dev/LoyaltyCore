@@ -1,4 +1,5 @@
 from django.urls import path
+
 from .views import (
     LoyaltyCardView,
     AddBonusView,
@@ -7,10 +8,47 @@ from .views import (
     CreateOrderView,
 )
 
+app_name = "loyalty"
+
 urlpatterns = [
-    path('card/', LoyaltyCardView.as_view()),
-    path('bonus/add/', AddBonusView.as_view()),
-    path('bonus/spend/', SpendBonusView.as_view()),
-    path('wallet/', WalletHistoryView.as_view()),
-    path('order/create/', CreateOrderView.as_view()),
+    # =====================
+    # LOYALTY CARD
+    # =====================
+    path(
+        "card/",
+        LoyaltyCardView.as_view(),
+        name="loyalty-card-detail",
+    ),
+
+    # =====================
+    # BONUS OPERATIONS
+    # =====================
+    path(
+        "bonus/add/",
+        AddBonusView.as_view(),
+        name="bonus-add",
+    ),
+    path(
+        "bonus/spend/",
+        SpendBonusView.as_view(),
+        name="bonus-spend",
+    ),
+
+    # =====================
+    # WALLET
+    # =====================
+    path(
+        "wallet/",
+        WalletHistoryView.as_view(),
+        name="wallet-history",
+    ),
+
+    # =====================
+    # ORDERS
+    # =====================
+    path(
+        "order/create/",
+        CreateOrderView.as_view(),
+        name="order-create",
+    ),
 ]

@@ -1,10 +1,19 @@
-from django.utils import timezone
 from datetime import timedelta
+from django.utils import timezone
 
-from .models import WalletTransaction, Order
+from .models import LoyaltyCard, WalletTransaction, Order
 
 
-def check_and_reset_cycle(card):
+# =====================
+# CYCLE CHECK
+# =====================
+
+def check_and_reset_cycle(card: LoyaltyCard):
+    """
+    Agar cycle tugagan bo‘lsa:
+    - Qolgan bonuslarni expire qiladi
+    - Yangi cycle boshlaydi
+    """
     if timezone.now() > card.cycle_end:
         if card.current_balance > 0:
             WalletTransaction.objects.create(
@@ -18,15 +27,27 @@ def check_and_reset_cycle(card):
         card.cycle_number += 1
         card.cycle_start = now
         card.cycle_end = now + timedelta(days=card.cycle_days)
-        card.save()
+        card.save(update_fields=[
+            "current_balance",
+            "cycle_number",
+            "cycle_start",
+            "cycle_end",
+        ])
 
 
-def add_bonus(user, amount, reference_id=None):
-    card = user.loyaltycard
+# =====================
+# ADD BONUS
+# =====================
+
+def add_bonus(user, amount: int, reference_id: str | None = None):
+    """
+    Bonus qo‘shish
+    """
+    card = user.loyalty_card
     check_and_reset_cycle(card)
 
     card.current_balance += amount
-    card.save()
+    card.save(update_fields=["current_balance"])
 
     WalletTransaction.objects.create(
         user=user,
@@ -36,15 +57,22 @@ def add_bonus(user, amount, reference_id=None):
     )
 
 
-def spend_bonus(user, amount):
-    card = user.loyaltycard
+# =====================
+# SPEND BONUS
+# =====================
+
+def spend_bonus(user, amount: int):
+    """
+    Bonus ishlatish
+    """
+    card = user.loyalty_card
     check_and_reset_cycle(card)
 
     if card.current_balance < amount:
         raise ValueError("Bonus yetarli emas")
 
     card.current_balance -= amount
-    card.save()
+    card.save(update_fields=["current_balance"])
 
     WalletTransaction.objects.create(
         user=user,
@@ -53,10 +81,13 @@ def spend_bonus(user, amount):
     )
 
 
-def process_order(user, total_amount, bonus_amount):
+# =====================
+# PROCESS ORDER
+# =====================
+
+def process_order(user, total_amount: float, bonus_amount: int):
     """
-    Order yaratiladi va bonus avtomatik qo‘shiladi
-    Sikl muddati uzaytirilmaydi
+    Order yaratadi va bonus qo‘shadi
     """
     order = Order.objects.create(
         user=user,
@@ -64,26 +95,11 @@ def process_order(user, total_amount, bonus_amount):
         bonus_amount=bonus_amount
     )
 
-    add_bonus(
-        user=user,
-        amount=bonus_amount,
-        reference_id=str(order.id)
-    )
-
-    return order
-from .models import Order
-from .services import add_bonus
-
-
-def process_order(order: Order):
-    """
-    Order yaratilganda bonus qo‘shadi
-    cycle muddatini uzaytirmaydi
-    """
-    bonus = order.bonus_amount
-    if bonus > 0:
+    if bonus_amount > 0:
         add_bonus(
-            user=order.user,
-            amount=bonus,
+            user=user,
+            amount=bonus_amount,
             reference_id=f"order_{order.id}"
         )
+
+    return order

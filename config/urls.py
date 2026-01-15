@@ -4,6 +4,8 @@ URL configuration for config project.
 
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
 # Swagger (drf-spectacular)
 from drf_spectacular.views import (
@@ -13,30 +15,35 @@ from drf_spectacular.views import (
 
 urlpatterns = [
     # =====================
-    # ADMIN
+    # ADMIN PANEL
     # =====================
     path('admin/', admin.site.urls),
 
     # =====================
-    # DRF AUTH (browser test uchun)
+    # AUTH (REGISTER / LOGIN / JWT)
     # =====================
-    path('api-auth/', include('rest_framework.urls')),
+    path('api/auth/', include('accounts.urls')),
 
     # =====================
-    # LOYALTY API
+    # LOYALTY MODULE API
     # =====================
     path('api/loyalty/', include('loyalty.urls')),
 
     # =====================
     # SWAGGER / OPENAPI
     # =====================
-    # OpenAPI schema (json/yaml)
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-
-    # Swagger UI
-    path(
-        'swagger/',
-        SpectacularSwaggerView.as_view(url_name='schema'),
-        name='swagger-ui',
-    ),
+    path('swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 ]
+
+# =====================
+# STATIC FILES (ADMIN CSS)
+# =====================
+# FAQAT LOCALDA (DEBUG=True) ishlatiladi
+# Render’da collectstatic orqali serve bo‘ladi
+
+if settings.DEBUG:
+    urlpatterns += static(
+        settings.STATIC_URL,
+        document_root=settings.STATIC_ROOT
+    )
