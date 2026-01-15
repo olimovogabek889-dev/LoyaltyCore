@@ -23,7 +23,7 @@ SECRET_KEY = os.environ.get(
 )
 
 # ⚠️ LOCALDA True, RENDERDA False QILAMIZ
-DEBUG = os.environ.get("DEBUG", "True") == "True"
+DEBUG = os.environ.get("DEBUG") == "True"
 
 
 ALLOWED_HOSTS = [
