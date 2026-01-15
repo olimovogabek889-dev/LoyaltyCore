@@ -22,8 +22,9 @@ SECRET_KEY = os.environ.get(
     "django-insecure-unsafe-local-secret-key"
 )
 
-# ⚠️ LOCALDA True, RENDERDA False QILAMIZ
-DEBUG = os.environ.get("DEBUG") == "True"
+# LOCAL: DEBUG=True
+# RENDER: DEBUG=False
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 
 ALLOWED_HOSTS = [
